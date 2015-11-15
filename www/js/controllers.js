@@ -84,7 +84,6 @@ angular.module('starter.controllers', ['angularGeoFire','firebase'])
   };
 
   $scope.centerOnMe=function(){
-      console.log("asd");
       var locations = {
       "Capen": [43.000263, -78.7911327],
       };
@@ -92,13 +91,22 @@ angular.module('starter.controllers', ['angularGeoFire','firebase'])
       var friendsInQuery = {};
       var center = locations["Capen"];
       username="athigale"
-      var $geo=$geofire(FirebaseService.get(username+"friends"));
 
       var query = $geo.$query({
         center: center,
         radius: radiusInKm
       });
+
+      $geo.$get("n7").then(function(location){
+        if (location === null) {
+          console.log("Provided key is not in GeoFire");
+        }
+        else {
+          console.log("Provided key has a location of " + location);
+        }
+      })
       var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
+      // var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
   }
 
   $scope.$on("SEARCH:KEY_ENTERED", function (vehicleId,vehicleLocation) {
