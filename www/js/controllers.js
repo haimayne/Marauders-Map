@@ -4,6 +4,7 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
+    window.localStorage['username']='melvinph';
      username=window.localStorage['username']
      $scope.$geo=$geofire(FirebaseService.get(username+"friends"));
      makeFriends(username);
@@ -16,6 +17,13 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
       showBackdrop: false
     });
 
+    $scope.logout=function(){
+      username=window.localStorage['username']
+        var ref=FirebaseService.get("/users/"+username).child('l');
+        ref.update({"0":89,"1":89})
+    };
+
+  var options = { enableHighAccuracy: true };
     navigator.geolocation.getCurrentPosition(function (pos) {
       console.log('Got pos', pos);
       var latLng=new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
@@ -39,18 +47,25 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
         drawCircle();
       }, function (error) {
         alert('Unable to get location: ' + error.message);
-      });
+      },options);
 
-      navigator.geolocation.watchPosition(function(pos){
-        // addMarker([pos.coords.latitude,pos.coords.longitude],username)
-        var ref=FirebaseService.get("/users/"+username).child('l');
+    interval = window.setInterval(function(){
+         var ref=FirebaseService.get("/users/"+username).child('l');
         ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
         $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
         makeFriends(username)
-        console.log("self moved");
-      }, function (error) {
-        alert('Unable to get location: ' + error.message);
-      })
+    },4000);
+
+      // navigator.geolocation.watchPosition(function(pos){
+        // addMarker([pos.coords.latitude,pos.coords.longitude],username)
+        // var ref=FirebaseService.get("/users/"+username).child('l');
+        // ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
+        // $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
+        // makeFriends(username)
+        // console.log("self moved");
+      // }, function (error) {
+      //   alert('Unable to get location: ' + error.message);
+      // },options);
 
 
   };
@@ -135,9 +150,9 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
       //     console.log("Provided key has a location of " + location);
       //   }
       // })
-      var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
-      var geoQueryCallback1 = query.on("key_moved", "SEARCH:KEY_MOVED");
-      var geoQueryCallback2 = query.on("key_exited", "SEARCH:KEY_EXITED");
+      $scope.geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
+     $scope.geoQueryCallback1 = query.on("key_moved", "SEARCH:KEY_MOVED");
+     $scope.geoQueryCallback2 = query.on("key_exited", "SEARCH:KEY_EXITED");
       // var geoQueryCallback = query.on("key_entered", "SEARCH:KEY_ENTERED");
   }
 
@@ -157,7 +172,10 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
           friend.marker = addMarker(location,key);
         }
 
-      })
+      });
+      if(distance > 1) {
+            $scope.geoQueryCallback.cancel();
+      }
    });
 
   $scope.$on("SEARCH:KEY_MOVED", function (event, key, location, distance) {
@@ -166,6 +184,9 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
       // Animate the vehicle's marker
       if (typeof friend !== "undefined" && typeof friend.marker !== "undefined") {
         friend.marker.animatedMoveTo(location);
+      }
+      if(distance > 1) {
+            $scope.geoQueryCallback1.cancel();
       }
    });
 
@@ -179,6 +200,9 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
 
     // Remove the vehicle from the list of vehicles in the query
     delete $scope.friendsInQuery[key];
+    if(distance >1) {
+            $scope.geoQueryCallback2.cancel();
+      }
 
   });
   function coordinatesAreEquivalent(coord1, coord2) {
