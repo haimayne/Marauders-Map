@@ -4,7 +4,6 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
-     window.localStorage['username']="melvinph"
      username=window.localStorage['username']
      $scope.$geo=$geofire(FirebaseService.get(username+"friends"));
      makeFriends(username);
