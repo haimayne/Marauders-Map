@@ -1,8 +1,10 @@
 var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray,$firebaseObject,$geofire,FirebaseService) {
+
+
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
-     console.log("Centering");
+     window.localStorage['username']="melvinph"
      username=window.localStorage['username']
      $scope.$geo=$geofire(FirebaseService.get(username+"friends"));
      makeFriends(username);
@@ -18,7 +20,6 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
     navigator.geolocation.getCurrentPosition(function (pos) {
       console.log('Got pos', pos);
       var latLng=new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-
       $scope.map.setCenter(latLng);
       $scope.loading.hide();
          var marker = new google.maps.Marker({
@@ -35,10 +36,24 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
         });
         var ref=FirebaseService.get("/users/"+username).child('l');
         ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
+        $scope.selfLoc=marker;
         drawCircle();
       }, function (error) {
         alert('Unable to get location: ' + error.message);
       });
+
+      navigator.geolocation.watchPosition(function(pos){
+        // addMarker([pos.coords.latitude,pos.coords.longitude],username)
+        var ref=FirebaseService.get("/users/"+username).child('l');
+        ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
+        $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
+        makeFriends(username)
+        console.log("self moved");
+      }, function (error) {
+        alert('Unable to get location: ' + error.message);
+      })
+
+
   };
   function drawCircle(){
      var circle = new google.maps.Circle({
