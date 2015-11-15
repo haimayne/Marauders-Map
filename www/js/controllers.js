@@ -1,6 +1,4 @@
-angular.module('starter.controllers', ['angularGeoFire','firebase'])
-
-.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray,$firebaseObject,$geofire,FirebaseService) {
+var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray,$firebaseObject,$geofire,FirebaseService) {
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
@@ -73,6 +71,8 @@ angular.module('starter.controllers', ['angularGeoFire','firebase'])
         google.maps.event.addListener(marker, 'click', function () {
             infoWindow.open($scope.map, marker);
         });
+        var ref=FirebaseService.get("/users/"+username).child('l');
+        ref.update({"0":location[0],"1":location[1]})
         return marker;
   };
 
@@ -86,10 +86,6 @@ angular.module('starter.controllers', ['angularGeoFire','firebase'])
         var ref=FirebaseService.get("/users/"+friend)
         ref.once("value",function(f){
           $scope.$geo.$set(f.key(),f.val().l)
-          // main.set(f.val());
-          // console.log(f.key())
-          // console.log(f.val().l)
-          console.log("sdfsdf");
         })
       });
      });
