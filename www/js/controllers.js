@@ -4,7 +4,7 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
-    window.localStorage['username']='melvinph';
+    window.localStorage['username']='athigale';
      username=window.localStorage['username']
      $scope.$geo=$geofire(FirebaseService.get(username+"friends"));
      makeFriends(username);
@@ -50,19 +50,22 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
       },options);
 
     interval = window.setInterval(function(){
+       navigator.geolocation.getCurrentPosition(function (pos){
          var ref=FirebaseService.get("/users/"+username).child('l');
-        ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
+         ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
         $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
+        console.log("moving",pos.coords.latitude,pos.coords.longitude)
         makeFriends(username)
+       });
     },4000);
 
       // navigator.geolocation.watchPosition(function(pos){
-        // addMarker([pos.coords.latitude,pos.coords.longitude],username)
-        // var ref=FirebaseService.get("/users/"+username).child('l');
-        // ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
-        // $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
-        // makeFriends(username)
-        // console.log("self moved");
+      //   addMarker([pos.coords.latitude,pos.coords.longitude],username)
+      //   var ref=FirebaseService.get("/users/"+username).child('l');
+      //   ref.update({"0":pos.coords.latitude,"1":pos.coords.longitude})
+      //   $scope.selfLoc.animatedMoveTo([pos.coords.latitude,pos.coords.longitude]);
+      //   makeFriends(username)
+      //   console.log("self moved");
       // }, function (error) {
       //   alert('Unable to get location: ' + error.message);
       // },options);
