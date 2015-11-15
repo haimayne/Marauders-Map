@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.directives'])
+var app=angular.module('starter', ['ionic', 'starter.controllers', 'starter.directives','angularGeoFire'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
