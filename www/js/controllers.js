@@ -4,7 +4,7 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
   $scope.mapCreated = function(map) {
     $scope.friendsInQuery = {};
     $scope.map = map;
-    window.localStorage['username']='athigale';
+    window.localStorage['username']='melvinph';
      username=window.localStorage['username']
      $scope.$geo=$geofire(FirebaseService.get(username+"friends"));
      makeFriends(username);
@@ -80,7 +80,7 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
           fillColor: "#B650FF",
           fillOpacity: 0.1,
           map: $scope.map,
-          center: new google.maps.LatLng(43.000263, -78.7911327),
+          center: new google.maps.LatLng(42.9532522, -78.829037),
           radius: ((1.3) * 1000),
         });
   }
@@ -133,7 +133,7 @@ var main=app.controller('MapCtrl', function($scope, $ionicLoading,$firebaseArray
 
   $scope.centerOnMe=function(){
       var locations = {
-      "Capen": [43.000263, -78.7911327],
+      "Capen": [42.9532522, -78.829037],
       };
       var radiusInKm = 1;
 
